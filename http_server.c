@@ -164,17 +164,20 @@ static int http_server_worker(void *arg)
         pr_err("can't allocate memory!\n");
         return -1;
     }
+    printk("buf after kmalloc: %s", buf);
 
     request.socket = socket;
     http_parser_init(&parser, HTTP_REQUEST);
     parser.data = &request;
     while (!kthread_should_stop()) {
+        memset(buf, 0, RECV_BUFFER_SIZE);
         int ret = http_server_recv(socket, buf, RECV_BUFFER_SIZE - 1);
         if (ret <= 0) {
             if (ret)
                 pr_err("recv error: %d\n", ret);
             break;
         }
+        printk("buf: %s", buf);
         http_parser_execute(&parser, &setting, buf, ret);
         if (request.complete && !http_should_keep_alive(&parser))
             break;
