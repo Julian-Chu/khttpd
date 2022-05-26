@@ -18,7 +18,7 @@
     ""                                                        \
     "HTTP/1.1 200 OK" CRLF "Server: " KBUILD_MODNAME CRLF     \
     "Content-Type: text/plain" CRLF "Content-Length: 12" CRLF \
-    "Connection: Keep-Alive" CRLF CRLF "Hello World!" CRLF
+    "Connection: Keep-Alive" CRLF CRLF "Hello World!"
 #define HTTP_RESPONSE_501                                              \
     ""                                                                 \
     "HTTP/1.1 501 Not Implemented" CRLF "Server: " KBUILD_MODNAME CRLF \
@@ -164,7 +164,6 @@ static int http_server_worker(void *arg)
         pr_err("can't allocate memory!\n");
         return -1;
     }
-    printk("buf after kmalloc: %s", buf);
 
     request.socket = socket;
     http_parser_init(&parser, HTTP_REQUEST);
@@ -177,7 +176,6 @@ static int http_server_worker(void *arg)
                 pr_err("recv error: %d\n", ret);
             break;
         }
-        printk("buf: %s", buf);
         http_parser_execute(&parser, &setting, buf, ret);
         if (request.complete && !http_should_keep_alive(&parser))
             break;
